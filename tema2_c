@@ -1,0 +1,82 @@
+//Steica Malina-Alexa, grupa 161, problema 1
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <math.h>
+void *function1 ();
+void *function2 ();
+
+int fac(int x)
+{
+	int i,fac=1;
+	for(i=1;i<=x;i++)
+		fac=fac*i;
+	return fac;
+}
+pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+int contor = 0;
+float x,Q,sum=0;
+int i,j,limit;
+
+int main ()
+{
+	printf("Enter the value of x of sinx series: ");
+	scanf("%f",&x);
+
+	printf("Enter the limit upto which you want to expand the series: ");
+	scanf("%d",&limit);
+    Q=x;
+	x = x*(3.1415/180);
+  int rc1, rc2;
+  pthread_t thread1, thread2;
+/* creare thread-uri */
+  if ((rc1 = pthread_create (&thread1, NULL, &function1, NULL)))
+    {
+      printf ("Eroare de creare thread-uri! %d \n", rc1);
+    }
+  if ((rc2 = pthread_create (&thread2, NULL, &function2, NULL)))
+    {
+      printf ("Eroare de creare thread-uri! %d\n", rc2);
+    }
+  pthread_join (thread1, NULL);
+  pthread_join (thread2, NULL);
+  printf("Sin(%0.1f): %f",Q,sum);
+  printf ("Sfarsit program!\n");
+  exit (EXIT_SUCCESS);
+}
+
+void *function1 ()
+{
+pthread_mutex_lock (&mutex1);
+sum=0;
+	for(i=1,j=1;i<=limit;i++,j=j+2)
+	{
+		if(i%2!=0)
+		{
+			sum=sum+pow(x,j)/fac(j);
+		}
+		else
+			sum=sum-pow(x,j)/fac(j);
+	}
+
+
+  pthread_mutex_unlock (&mutex1);
+}
+
+void *function2 ()
+{
+pthread_mutex_lock (&mutex1);
+sum=0;
+
+	for(i=1,j=1;i<=limit;i++,j=j+2)
+	{
+		if(i%2!=0)
+		{
+			sum=sum+pow(x,j)/fac(j);
+		}
+		else
+			sum=sum-pow(x,j)/fac(j);
+	}
+  pthread_mutex_unlock (&mutex1);
+}
