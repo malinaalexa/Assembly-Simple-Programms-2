@@ -1,0 +1,113 @@
+; Steica Malina-Alexa, grupa 161, problema 1
+
+extern printf
+extern scanf
+
+section .data
+x dq 1.0
+x1 dq 1.0
+x2 dq 1.0
+x3 dq 1.0
+x5 dq 1.0
+x7 dq 1.0
+x9 dq 1.0
+x11 dq 1.0
+taylor1 dq 1.0
+taylor2 dq 6.0
+taylor3 dq 120.0
+taylor4 dq 5040.0
+taylor5 dq 362880.0
+taylor6 dq 3991680.0
+f_sin db "Am calculat sin(%f)=%f",10,0
+f_read db "%lf\n",0
+msg2 db "Introduce un numar de la tastatura:", 9,10
+len2 equ $ - msg2
+section .bss
+section .text
+
+global main
+main:
+
+push rbp
+mov rbp, rsp
+
+mov ecx, msg2
+mov edx, len2
+mov ebx, 1 
+mov eax, 4
+int 0x80
+
+mov rdi, f_read
+mov rax, 0 
+mov rsi, x
+call scanf
+movsd qword [x], xmm0
+
+movsd xmm0, [x]
+movsd qword [x1], xmm0
+
+movsd xmm0, [x] 
+mulsd xmm0, [x] 
+movsd [x2], xmm0
+
+movsd xmm0, [x2] 
+mulsd xmm0, [x] 
+movsd [x3], xmm0
+
+movsd xmm0, [x3] 
+mulsd xmm0, [x2] 
+movsd [x5], xmm0
+
+movsd xmm0, [x5] 
+mulsd xmm0, [x2] 
+movsd [x7], xmm0
+
+movsd xmm0, [x7]
+mulsd xmm0, [x2]
+movsd [x9], xmm0
+
+movsd xmm0, [x9]
+mulsd xmm0, [x2]
+movsd [x11], xmm0
+
+movsd xmm2, [x3]
+divsd xmm2, [taylor2]
+movsd [x3], xmm2
+
+movsd xmm2, [x5]
+divsd xmm2, [taylor3]
+movsd [x5], xmm2
+
+movsd xmm2, [x7]
+divsd xmm2, [taylor4]
+movsd [x7], xmm2
+
+movsd xmm2, [x9]
+divsd xmm2, [taylor5]
+movsd [x9], xmm2
+
+movsd xmm2, [x]
+subsd xmm2, [x3]
+movsd [x], xmm2
+
+movsd xmm2, [x]
+addsd xmm2, [x5]
+movsd [x], xmm2
+
+movsd xmm2, [x]
+subsd xmm2, [x7]
+movsd [x], xmm2
+
+movsd xmm2, [x]
+addsd xmm2, [x9]
+movsd [x], xmm2
+
+mov rdi,f_sin
+movsd xmm0, [x1]
+movsd xmm1, [x]
+mov rax, 2 
+call printf
+
+mov rsp, rbp
+pop rbp 
+ret
